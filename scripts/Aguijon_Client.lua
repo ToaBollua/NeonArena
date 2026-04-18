@@ -90,6 +90,15 @@ function onActivated()
         isOverheated = true
         canFire = false
         print("CLIENTE: ¡Arma sobrecalentada! Enfriamiento forzado.")
+
+        -- Efecto de sonido: Alarma de sobrecalentamiento
+        local overheatSound = Instance.new("Sound")
+        overheatSound.SoundId = "rbxassetid://255060411" -- Zumbido de alarma
+        overheatSound.Volume = 0.8
+        overheatSound.Parent = handle
+        overheatSound:Play()
+        Debris:AddItem(overheatSound, 3)
+
         -- Inicia el enfriamiento forzado
         task.delay(OVERHEAT_COOLDOWN, function()
             currentHeat = 0
@@ -98,6 +107,14 @@ function onActivated()
             updateHeatStatus()
             print("CLIENTE: Arma lista para disparar de nuevo.")
         end)
+    else
+        -- Efecto de sonido: Disparo
+        local fireSound = Instance.new("Sound")
+        fireSound.SoundId = "rbxassetid://131257121" -- Sonido de disparo láser de alta frecuencia
+        fireSound.Volume = 0.6
+        fireSound.Parent = handle
+        fireSound:Play()
+        Debris:AddItem(fireSound, 1)
     end
 
     local origen = muzzle.Position

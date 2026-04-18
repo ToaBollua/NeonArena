@@ -86,3 +86,24 @@ end
 
 -- Conecta la función onHeartbeat para que se ejecute en cada frame
 connection = RunService.Heartbeat:Connect(onHeartbeat)
+
+-- Conecta el evento de cambio de salud para los sonidos
+humanoid.HealthChanged:Connect(function(health)
+    if health > 0 then
+        -- Efecto de sonido: Impacto metálico
+        local impactSound = Instance.new("Sound")
+        impactSound.SoundId = "rbxassetid://131257125" -- Crujido de metal/estática
+        impactSound.Volume = 0.5
+        impactSound.Parent = drone
+        impactSound:Play()
+        Debris:AddItem(impactSound, 1)
+    else
+        -- Efecto de sonido: Desintegración
+        local deathSound = Instance.new("Sound")
+        deathSound.SoundId = "rbxassetid://131257126" -- Desintegración digital
+        deathSound.Volume = 0.8
+        deathSound.Parent = drone
+        deathSound:Play()
+        Debris:AddItem(deathSound, 2)
+    end
+end)
