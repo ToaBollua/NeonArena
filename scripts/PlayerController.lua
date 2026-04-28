@@ -65,6 +65,7 @@ function onCharacterAdded(character)
     local function handleDash(actionName, inputState, inputObject)
         if inputState == Enum.UserInputState.Begin and tick() - lastDashTime > DASH_COOLDOWN then
             lastDashTime = tick()
+            player:SetAttribute("LastDashTime", lastDashTime) -- Para la UI
 
             local dashDirection = moveVector
             if dashDirection.Magnitude == 0 then -- Si está quieto, hace el dash hacia adelante
@@ -80,6 +81,27 @@ function onCharacterAdded(character)
             bodyVelocity.Parent = rootPart
 
             Debris:AddItem(bodyVelocity, DASH_DURATION)
+
+            -- Efecto visual: Expandir FOV temporalmente
+            local originalFov = camera.FieldOfView
+            local dashFov = originalFov + 15
+
+            local fovTweenIn = TweenService:Create(camera, TweenInfo.new(DASH_DURATION / 2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = dashFov})
+            local fovTweenOut = TweenService:Create(camera, TweenInfo.new(DASH_DURATION / 2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {FieldOfView = originalFov})
+
+            fovTweenIn:Play()
+            fovTweenIn.Completed:Connect(function()
+                fovTweenOut:Play()
+            end)
+
+            -- Efecto de sonido: Ráfaga de viento o teletransporte
+            local dashSound = Instance.new("Sound")
+            dashSound.SoundId = "rbxassetid://131138865" -- ID de sonido de dash/viento
+            dashSound.Volume = 0.5
+            dashSound.Parent = rootPart
+            dashSound:Play()
+            Debris:AddItem(dashSound, dashSound.TimeLength > 0 and dashSound.TimeLength or 2)
+
             print("PLAYER: Dash!")
         end
         return Enum.ContextActionResult.Sink
